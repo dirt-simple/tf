@@ -29,8 +29,8 @@ data "aws_iam_policy_document" "lambda_assume_role" {
     effect = "Allow"
     actions = ["sts:AssumeRole"]
     principals {
-        type = "Service"
-        identifiers = ["lambda.amazonaws.com"]
+            type = "Service"
+            identifiers = ["lambda.amazonaws.com"]
         }
     }
 }
@@ -60,23 +60,30 @@ resource "aws_iam_role" "sqs_lambda" {
 
 data "aws_iam_policy_document" "sqs_lambda" {
     statement {
-    effect = "Allow"
-    actions = [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-    ]
-    resources = ["arn:aws:logs:*:*:*"]
+        effect = "Allow"
+        actions = [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+        ]
+        resources = ["arn:aws:logs:*:*:*"]
     }
     statement {
-    effect = "Allow"
-    actions = [
-        "sqs:ReceiveMessage",
-        "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes",
-        "sqs:ChangeMessageVisibility"
-    ]
-    resources = ["${aws_sqs_queue.sqs_queue.arn}"]
+        effect = "Allow"
+        actions = [
+            "sqs:ReceiveMessage",
+            "sqs:DeleteMessage",
+            "sqs:SendMessage",
+            "sqs:GetQueueUrl",
+            "sqs:GetQueueAttributes",
+            "sqs:ChangeMessageVisibility"
+        ]
+        resources = ["${aws_sqs_queue.sqs_queue.arn}"]
+    }
+    statement {
+        effect = "Allow"
+        actions = ["cloudfront:CreateInvalidation"]
+        resources = ["*"]
     }
 }
 
@@ -143,6 +150,7 @@ data "aws_iam_policy_document" "sqs_queue" {
         variable = "aws:SourceArn"
         values = [
             "${aws_sns_topic.sns_topic.arn}",
+            "${aws_lambda_function.sqs_lambda.arn}"
         ]
     }
     effect = "Allow"

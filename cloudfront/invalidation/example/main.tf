@@ -1,5 +1,6 @@
 terraform {
   backend "s3" {
+    # replace with your bucket/region/key
     bucket = "ops-config-mgmt"
     region = "us-east-1"
     key = "terraform-state/infrastructure/cloudfront-invalidation/terraform.tfstate"
