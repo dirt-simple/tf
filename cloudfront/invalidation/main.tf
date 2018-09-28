@@ -82,6 +82,11 @@ data "aws_iam_policy_document" "sqs_lambda" {
     }
     statement {
         effect = "Allow"
+        actions = ["sqs:ListQueues"]
+        resources = ["*"]
+    }
+    statement {
+        effect = "Allow"
         actions = ["cloudfront:CreateInvalidation"]
         resources = ["*"]
     }
