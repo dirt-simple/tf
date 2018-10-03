@@ -9,10 +9,10 @@ terraform {
 
 module "cloudfront_invalidation" {
     # local testing source
-    source = "../"
+    source = ".."
   
     # actual source
-    # source = "github.com/dirt-simple/tf/cloudfront/invalidation"
+    # source = "github.com/dirt-simple/tf/aws/cloudfront/invalidation"
 
     # optional args
     # name = "<better_name>"
