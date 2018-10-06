@@ -3,7 +3,8 @@ var AWS = require("aws-sdk");
 var cloudfront = new AWS.CloudFront();
 var sqs = new AWS.SQS({region: process.env.AWS_REGION});
 
-const NUM_OF_RETRIES = 3;
+const NUM_OF_RETRIES = process.env.INVALIDATION_MAX_RETRIES;
+var RETRY_TIMOUT = process.env.INVALIDATION_RETRY_TIMOUT
 
 exports.handler = (event, context, callback) => {
     var record = event.Records[0];
@@ -42,7 +43,7 @@ exports.handler = (event, context, callback) => {
             
             var retried =  message.retry_count | 0;
             if (retried > NUM_OF_RETRIES-1) {
-                var msg = `[WARNING] Failed after max retries`;
+                var msg = `[WARNING] Failed after ${NUM_OF_RETRIES} retries`;
                 console.log(msg);
                 callback(null, msg);
                 return;
@@ -53,13 +54,14 @@ exports.handler = (event, context, callback) => {
     			
     			var arn = record.eventSourceARN.split(':', 6);
                 var queueUrl = 'https://sqs.'+ arn[3] +'.amazonaws.com/'+ arn[4] +'/'+ arn[5];
-                
+
+                // This Message must be in SNS => SQS Format for incoming parsing to work
     			var params = {
-    				MessageBody: JSON.stringify(message),
+    				MessageBody: JSON.stringify({Message: JSON.stringify(message)}),
     				QueueUrl: queueUrl,
-    				DelaySeconds: 320
+    				DelaySeconds: RETRY_TIMOUT
     			};
-			
+			    var msg = `[RETRY] retrying ${invalidationParams.DistributionId}:${invalidationParams.Paths}`
 	    		console.log(params)
 
     			sqs.sendMessage(params, function (err, data) {
@@ -67,7 +69,7 @@ exports.handler = (event, context, callback) => {
     					console.log(err);
     					callback("failed to send message for retry");
     				} else {
-    	                var msg = `[WARNING] Failed, will retry. ${retried} retries`;
+    	                var msg = `[RETRY] Scheduling a retry in ${RETRY_TIMOUT} seconds. ${retried} retries`;
                         console.log(msg);
                         callback(null, msg);
                         return;

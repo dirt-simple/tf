@@ -10,12 +10,25 @@ variable "name" {
 
 variable "lambda_concurrent_executions" {
   description = "Max concurrent invalidation lambdas."
-  default     = 10
+  default     = 1
 }
 
-variable "invalidation_retries" {
+variable "invalidation_max_retries" {
   description = "How may times to try to invalidate a path."
-  default     = 10
+  default     = 20
+}
+
+variable "invalidation_retry_timeout" {
+  description = "How long to wait between retries. Max is 900"
+  default     = 300
+}
+
+variable "sqs_message_retention_seconds" {
+  default = "86400"
+}
+
+variable "sqs_receive_wait_time_seconds" {
+  default = "10"
 }
 
 provider "aws" {
@@ -35,7 +48,6 @@ data "aws_iam_policy_document" "lambda_assume_role" {
   }
 }
 
-# SQS Lambda
 data "archive_file" "sqs_lambda" {
   type        = "zip"
   source_file = "${path.module}/lambda/index.js"
@@ -50,6 +62,12 @@ resource "aws_lambda_function" "sqs_lambda" {
   source_code_hash               = "${data.archive_file.sqs_lambda.output_base64sha256}"
   runtime                        = "nodejs6.10"
   reserved_concurrent_executions = "${var.lambda_concurrent_executions}"
+  environment {
+    variables = {
+      INVALIDATION_MAX_RETRIES = "${var.invalidation_max_retries}"
+      INVALIDATION_RETRY_TIMOUT = "${var.invalidation_retry_timeout}"
+    }
+  }
 }
 
 resource "aws_iam_role" "sqs_lambda" {
@@ -104,45 +122,25 @@ resource "aws_iam_role_policy" "sqs_lambda" {
   policy = "${data.aws_iam_policy_document.sqs_lambda.json}"
 }
 
-# End SQS Lambda
-
-# Start SNS
 resource "aws_sns_topic" "sns_topic" {
   name = "${var.name}"
 }
 
-# End SNS
-
-# Start DLQ
-resource "aws_sqs_queue" "sqs_dead_queue" {
-  name = "${var.name}-dlq"
-}
-
-# End DLQ
-
-# Start SQS
 resource "aws_sqs_queue" "sqs_queue" {
   name                      = "${var.name}"
-  message_retention_seconds = 86400
-  receive_wait_time_seconds = 10
-
-  redrive_policy = <<-JSON
-    {
-        "deadLetterTargetArn": "${aws_sqs_queue.sqs_dead_queue.arn}",
-        "maxReceiveCount": ${var.invalidation_retries}
-    }
-    JSON
+  message_retention_seconds = "${var.sqs_message_retention_seconds}"
+  receive_wait_time_seconds = "${var.sqs_receive_wait_time_seconds}"
 }
 
-resource "aws_sns_topic_subscription" "sqs" {
+resource "aws_sns_topic_subscription" "sqs_subscribe" {
   topic_arn = "${aws_sns_topic.sns_topic.arn}"
   endpoint  = "${aws_sqs_queue.sqs_queue.arn}"
   protocol  = "sqs"
 }
 
-resource "aws_lambda_event_source_mapping" "worker" {
+resource "aws_lambda_event_source_mapping" "sqs_worker" {
   enabled          = true
-  batch_size       = 10
+  batch_size       = 10 // This is the max for SQS
   event_source_arn = "${aws_sqs_queue.sqs_queue.arn}"
   function_name    = "${aws_lambda_function.sqs_lambda.arn}"
 }
@@ -182,8 +180,6 @@ data "aws_iam_policy_document" "sqs_queue" {
     ]
   }
 }
-
-# End SQS
 
 output "sns-topic-arn" {
   value = "${aws_sns_topic.sns_topic.arn}"
