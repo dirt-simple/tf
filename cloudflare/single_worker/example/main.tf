@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     # replace with your bucket/region/key
-    bucket = "beeceej-ops"
+    bucket = "ops-config-mgmt"
     region = "us-east-1"
     key    = "tfstate/infrastructure/cloudflare_single_worker_example/terraform.tfstate"
   }
