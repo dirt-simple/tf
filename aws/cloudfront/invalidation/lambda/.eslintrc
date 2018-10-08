@@ -1,0 +1,23 @@
+{
+    "extends": [
+      "prettier"
+    ],
+    "globals": {
+      "__LOCAL__": true
+    },
+    "plugins": ["prettier"],
+    "rules": {
+      "no-restricted-syntax": 0,
+      "import/extensions": 0,
+      "react/require-default-props": 0,
+      "import/no-named-default": 0,
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "semi": false,
+          "trailingComma": "es5"
+        }
+      ]
+    }
+  }
