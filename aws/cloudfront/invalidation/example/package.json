@@ -1,0 +1,17 @@
+{
+	"name": "cloufront-invalidation-lambda",
+	"version": "1.0.0",
+	"description": "Lambda @ Edge used to invalidate cloudfront",
+	"main": "lambda/index.js",
+	"scripts": {
+		"test": ""
+	},
+	"author": "dirt-simple",
+	"license": "MIT",
+	"devDependencies": {
+		"eslint": "^5.6.1",
+		"eslint-config-prettier": "^3.1.0",
+		"eslint-plugin-prettier": "^3.0.0",
+		"prettier": "^1.14.3"
+	}
+}
