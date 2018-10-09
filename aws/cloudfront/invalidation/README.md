@@ -1,10 +1,10 @@
 # CloudFront Invalidator
 
-- [Module%20Usage](#Module%20Usage)
-- [Argument%20Reference](#Argument%20Reference)
-- [Attributes%20Reference](#Attributes%20Reference)
-- [System%20Usage](#System%20Usage)
-- [CloudFront%20Limits](#CloudFront%20Limits)
+- [Module Usage](#Module%20Usage)
+- [Argument Reference](#Argument%20Reference)
+- [Attributes Reference](#Attributes%20Reference)
+- [System Usage](#System%20Usage)
+- [CloudFront Limits](#CloudFront%20Limits)
 - [Diagram](#Diagram)
 
 The CloudFront Invalidator provides a retry mechanism for invalidations. 
