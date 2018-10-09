@@ -1,6 +1,6 @@
 # CloudFront Invalidator
-
-- [Module Usage](#Module%20Usage)
+- <a name="#Module Usage">Module Usage</a>
+- [Module Usage](#Module Usage)
 - [Argument Reference](#Argument%20Reference)
 - [Attributes Reference](#Attributes%20Reference)
 - [System Usage](#System%20Usage)
@@ -18,7 +18,7 @@ Caveats:
 * Invalid requests are logged and ignored.
 * There is no DLQ.
 
-## Module%20Usage
+## Module Usage
 ```
 module "cloudfront_invalidation" {
   source = "github.com/dirt-simple/tf/aws/cloudfront/invalidation"
