@@ -24,7 +24,7 @@ module "cloudfront_invalidation" {
 }
 ```
 
-## Argument%20Reference
+## Argument Reference
 The following arguments are supported:
 
 * `name` - (Optional) All resources created will use this name. The default for this attribute is cloudformation-invalidation.
@@ -41,7 +41,7 @@ The following arguments are supported:
 
 * `sqs_receive_wait_time_seconds` - (Optional) The time for which a ReceiveMessage call will wait for a message to arrive (long polling) before returning. An integer from 0 to 20 (seconds). The default for this attribute is 10 seconds.
 
-## Attributes%20Reference
+## Attributes Reference
 In addition to all arguments above, the following attributes are exported:
 
 * `sns-topic-arn` - The ARN for the created Amazon SNS topic.
@@ -49,7 +49,7 @@ In addition to all arguments above, the following attributes are exported:
 * `sns-topic-id` - The ID for the created Amazon SNS topic.
 
 
-## System%20Usage
+## System Usage
 Write to SNS to schedule an invalidation. The SNS Message must be JSON and contain the path and distribution_id keys.
 
 Example:
