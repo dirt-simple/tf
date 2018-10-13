@@ -13,7 +13,7 @@ module "edge_spa" {
 ## Argument Reference
 The following arguments are supported:
 
-* `name` - (Optional) All resources created will use this name. The default for this attribute is cloudformation-invalidation.
+* `name` - (Optional) All resources created will use this name. The default for this attribute is edge-spa.
 
 * `aws_region` - (Optional) The AWS region that all resources will be created in. The default for this attribute is us-east-1.
 
