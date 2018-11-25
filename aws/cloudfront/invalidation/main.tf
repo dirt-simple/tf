@@ -31,6 +31,11 @@ variable "sqs_receive_wait_time_seconds" {
   default = "10"
 }
 
+variable "sqs_batch_size" {
+  description = "10 is the max for SQS"
+  default = 10
+}
+
 provider "aws" {
   region = "${var.aws_region}"
 }
@@ -140,7 +145,7 @@ resource "aws_sns_topic_subscription" "sqs_subscribe" {
 
 resource "aws_lambda_event_source_mapping" "sqs_worker" {
   enabled          = true
-  batch_size       = 10 // This is the max for SQS
+  batch_size       = "${var.sqs_batch_size}"
   event_source_arn = "${aws_sqs_queue.sqs_queue.arn}"
   function_name    = "${aws_lambda_function.sqs_lambda.arn}"
 }
