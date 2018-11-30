@@ -1,7 +1,7 @@
 "use strict";
-var AWS = require("aws-sdk");
-var cloudfront = new AWS.CloudFront();
-var sqs = new AWS.SQS({region: process.env.AWS_REGION});
+const AWS = require("aws-sdk");
+const cloudfront = new AWS.CloudFront();
+const sqs = new AWS.SQS({region: process.env.AWS_REGION});
 
 const NUM_OF_RETRIES = process.env.INVALIDATION_MAX_RETRIES;
 const RETRY_TIMOUT = process.env.INVALIDATION_RETRY_TIMOUT;
